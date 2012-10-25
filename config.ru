@@ -1,3 +1,3 @@
 require "./api"
 
-run BusaoCwb
+run BusNow

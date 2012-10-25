@@ -4,7 +4,7 @@ require "nokogiri"
 require "open-uri"
 require "jbuilder"
 
-class BusaoCwb < Sinatra::Base
+class BusNow < Sinatra::Base
   BASE_URL = "http://www.urbs.curitiba.pr.gov.br/horario-de-onibus/"
 
   get "/api/schedules/:code.json" do |code|
@@ -12,7 +12,7 @@ class BusaoCwb < Sinatra::Base
 
     items = []
 
-    page = Nokogiri::HTML.parse(open(BASE_URL + "#{code}"), BASE_URL, "UTF-8")
+    page = crawl_page "#{code}"
     name = page.css("h2.left.schedule")[0].content
     page.css("div.bg-white.round-bl-60.width96.margin-medium-top.clearfix").each do |line|
       station = line.css("h3.schedule")[0].content
@@ -36,7 +36,8 @@ class BusaoCwb < Sinatra::Base
 
     items = []
 
-    page = Nokogiri::HTML.parse(open(BASE_URL + "#{code}/#{type}"), BASE_URL, "UTF-8")
+    crawl_page "#{code}/#{type}"
+
     name = page.css("h2.left.schedule")[0].content
     page.css("div.bg-white.round-bl-60.width96.margin-medium-top.clearfix").each do |line|
       station = line.css("h3.schedule")[0].content
@@ -53,5 +54,10 @@ class BusaoCwb < Sinatra::Base
         json.schedules item[:schedules]
       end
     end
+  end
+
+  private
+  def crawl_page(url)
+    Nokogiri::HTML.parse(open(BASE_URL + url), BASE_URL, "UTF-8")
   end
 end
