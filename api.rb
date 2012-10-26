@@ -7,10 +7,6 @@ require "jbuilder"
 class BusNow < Sinatra::Base
   BASE_URL = "http://www.urbs.curitiba.pr.gov.br/horario-de-onibus/"
 
-  get "/api/schedules"
-    content_type :json
-  end
-
   get "/api/schedules/:code" do |code|
     content_type :json
     result = crawl_page "#{code}"
